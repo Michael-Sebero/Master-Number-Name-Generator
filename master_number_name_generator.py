@@ -243,7 +243,7 @@ def has_master_number(profile, target_numbers=[11, 22, 33]):
     return master_numbers
 
 def find_master_number_names(birth_date, gender, last_name, target_numbers=[11, 22, 33], 
-                           target_components=None, max_results=10):
+                           target_components=None, max_results=10, fixed_first_name=None):
     """Find name combinations that result in master numbers"""
     
     if target_components is None:
@@ -260,6 +260,11 @@ def find_master_number_names(birth_date, gender, last_name, target_numbers=[11, 
         # If gender not specified or other, use both lists
         first_names = get_male_names() + get_female_names()
         middle_names = get_middle_names()
+    
+    # If a fixed first name is provided, use only that
+    if fixed_first_name:
+        first_names = [fixed_first_name]
+        print(f"Searching with fixed first name: {fixed_first_name}")
     
     results = []
     combinations_checked = 0
@@ -340,20 +345,19 @@ def display_results(results):
 def main():
     """Main function to run the master number name generator"""
     try:
-        print("=" * 60)
-        print(" MASTER NUMBER NAME GENERATOR")
-        print("=" * 60)
-        print("This tool finds name combinations that result in master numbers")
-        print("(11, 22, 33) in your numerology profile.\n")
         
         # Get user input
         birth_date = input("Enter birth date (MM-DD-YYYY or MM/DD/YYYY): ").strip()
         gender = input("Enter gender (M/F): ").strip()
         last_name = input("Enter last name: ").strip()
+        first_name = input("Enter first name (optional): ").strip()
         
         if not birth_date or not last_name:
             print("Error: Birth date and last name are required.")
             return
+        
+        # Use None if first name is empty
+        fixed_first_name = first_name if first_name else None
         
         # Optional filters
         print("\nOptional Filters (press Enter to use defaults):")
@@ -372,7 +376,7 @@ def main():
         else:
             target_numbers = [11, 22, 33]
         
-        components_input = input("Target components (life_path, soul_urge, expression, personality): ").strip()
+        components_input = input("Target components (optional) [life_path, soul_urge, expression, personality]: ").strip()
         if components_input:
             valid_components = ['life_path', 'soul_urge', 'expression', 'personality']
             target_components = [comp.strip() for comp in components_input.split(',') 
@@ -396,12 +400,14 @@ def main():
         print(f"\nSearching for names with master numbers {target_numbers}")
         print(f"Target components: {target_components}")
         print(f"Maximum results: {max_results}")
+        if fixed_first_name:
+            print(f"Using fixed first name: {fixed_first_name}")
         print("-" * 60)
         
         # Find matching names
         results = find_master_number_names(
             birth_date, gender, last_name, 
-            target_numbers, target_components, max_results
+            target_numbers, target_components, max_results, fixed_first_name
         )
         
         # Display results
